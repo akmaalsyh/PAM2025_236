@@ -1,3 +1,33 @@
 <resources>
-    <string name="app_name">SIMKader_236</string>
+    <string name="app_name">SIM-Kader IMM FT UMY</string>
+
+    <string name="dashboard_title">Dashboard Kader</string>
+    <string name="admin_dashboard">Dashboard Admin</string>
+    <string name="entry_kader_title">Tambah Data Kader</string>
+    <string name="edit_kader_title">Edit Data Kader</string>
+    <string name="detail_kader_title">Detail Profil Anggota</string>
+    <string name="back">Kembali</string>
+
+    <string name="login_title">Login Pengurus</string>
+    <string name="register_title">Daftar Akun Kader</string>
+    <string name="username">Username / NIM</string>
+    <string name="password">Password</string>
+    <string name="login_btn">Masuk</string>
+    <string name="register_btn">Daftar</string>
+    <string name="no_account">Belum punya akun? Daftar di sini</string>
+
+    <string name="nama_lengkap">Nama Lengkap</string>
+    <string name="nim">Nomor Induk Mahasiswa (NIM)</string>
+    <string name="prodi">Program Studi</string>
+    <string name="angkatan">Tahun Angkatan</string>
+    <string name="status_kader">Status Kaderisasi</string>
+    <string name="simpan">Simpan Data</string>
+    <string name="hapus">Hapus Anggota</string>
+    <string name="cari_kader">Cari berdasarkan Nama atau NIM...</string>
+
+    <string name="delete_confirmation">Apakah Anda yakin ingin menghapus data kader ini?</string>
+    <string name="yes">Ya</string>
+    <string name="no">Tidak</string>
+    <string name="data_not_found">Data Kader Tidak Ditemukan</string>
+    <string name="success_save">Data berhasil disimpan</string>
 </resources>
