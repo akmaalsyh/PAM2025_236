@@ -15,7 +15,7 @@ import java.io.IOException
 
 // Status UI khusus untuk halaman Detail
 sealed interface DetailUiState {
-    data class Success(val dataKader: DataKader) : DetailUiState
+    data class Success(val kader: DataKader) : DetailUiState // REVISI: Nama variabel 'kader' agar cocok dengan View
     object Error : DetailUiState
     object Loading : DetailUiState
 }
@@ -25,10 +25,8 @@ class DetailViewModel(
     private val repositoriDataKader: RepositoriDataKader
 ) : ViewModel() {
 
-    // Mengambil ID Kader dari argumen navigasi (itemId)
     private val kaderId: Int = checkNotNull(savedStateHandle[DestinasiDetail.kaderIdArg])
 
-    // State UI untuk mengontrol tampilan di layar detail
     var detailUiState: DetailUiState by mutableStateOf(DetailUiState.Loading)
         private set
 
@@ -36,27 +34,29 @@ class DetailViewModel(
         getKaderById()
     }
 
-    // Fungsi untuk mengambil detail kader dari MySQL berdasarkan ID
     fun getKaderById() {
         viewModelScope.launch {
             detailUiState = DetailUiState.Loading
             detailUiState = try {
                 val kader = repositoriDataKader.getSatuKader(kaderId)
                 DetailUiState.Success(kader)
-            } catch (e: IOException) {
-                DetailUiState.Error
-            } catch (e: HttpException) {
+            } catch (e: Exception) {
                 DetailUiState.Error
             }
         }
     }
 
-    // Fungsi tambahan untuk menghapus data kader (REQ-7 di SRS)
-    suspend fun deleteKader() {
-        try {
-            repositoriDataKader.hapusSatuKader(kaderId)
-        } catch (e: Exception) {
-            // Handle error
+    // REVISI: Menggunakan viewModelScope dan callback onSuccess agar navigasi sinkron
+    fun deleteKader(onSuccess: () -> Unit) {
+        viewModelScope.launch {
+            try {
+                val response = repositoriDataKader.hapusSatuKader(kaderId)
+                if (response.isSuccessful) {
+                    onSuccess() // Navigasi kembali setelah hapus sukses
+                }
+            } catch (e: Exception) {
+                // Handle error silakan tambah Toast jika perlu
+            }
         }
     }
 }
