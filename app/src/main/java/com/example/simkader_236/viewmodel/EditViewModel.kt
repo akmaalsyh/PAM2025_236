@@ -13,66 +13,64 @@ import com.example.simkader_236.modeldata.toUIStateKader
 import com.example.simkader_236.repositori.RepositoriDataKader
 import com.example.simkader_236.uicontroller.route.DestinasiEdit
 import kotlinx.coroutines.launch
-import retrofit2.Response
 
 class EditViewModel(
     savedStateHandle: SavedStateHandle,
     private val repositoriDataKader: RepositoriDataKader
 ) : ViewModel() {
 
-    // Mendapatkan ID Kader dari argumen navigasi (itemId) [cite: 597]
     private val kaderId: Int = checkNotNull(savedStateHandle[DestinasiEdit.kaderIdArg])
 
-    // State untuk menampung data yang sedang diedit di form [cite: 596]
-    var uiStateKader by mutableStateOf(UIStateKader())
+    // REVISI: Nama variabel diubah jadi kaderUiState agar cocok dengan View
+    var kaderUiState by mutableStateOf(UIStateKader())
         private set
 
     init {
-        // Mengambil data awal dari MySQL untuk ditampilkan di form [cite: 597-598]
         viewModelScope.launch {
             try {
                 val kader = repositoriDataKader.getSatuKader(kaderId)
-                // Mengubah model data menjadi UI State agar muncul di TextField [cite: 599-601]
-                uiStateKader = kader.toUIStateKader(isEntryValid = true)
+                // Mengisi form dengan data lama dari database
+                kaderUiState = kader.toUIStateKader(isEntryValid = true)
             } catch (e: Exception) {
-                // Log error jika gagal mengambil data
+                println("Error Ambil Data: ${e.message}")
             }
         }
     }
 
-    // Memperbarui state setiap kali input di TextField berubah [cite: 602-603]
+    // Memperbarui state saat input berubah
     fun updateUiState(detailKader: DetailKader) {
-        uiStateKader = UIStateKader(
+        kaderUiState = UIStateKader(
             detailKader = detailKader,
             isEntryValid = validasiInput(detailKader)
         )
     }
 
-    // Validasi agar field tidak kosong [cite: 607-610]
-    private fun validasiInput(uiState: DetailKader = uiStateKader.detailKader): Boolean {
+    private fun validasiInput(uiState: DetailKader = kaderUiState.detailKader): Boolean {
         return with(uiState) {
             nama.isNotBlank() && nim.isNotBlank() && prodi.isNotBlank() &&
                     angkatan.isNotBlank() && status.isNotBlank()
         }
     }
 
-    // Fungsi untuk mengirim perubahan data ke database MySQL (Update) [cite: 612]
-    suspend fun editKader() {
-        if (validasiInput(uiStateKader.detailKader)) {
-            try {
-                // Memanggil API editKader.php melalui repositori [cite: 614]
-                val response: Response<Void> = repositoriDataKader.editSatuKader(
-                    kaderId,
-                    uiStateKader.detailKader.toDataKader()
-                )
+    // REVISI: Nama fungsi jadi updateKader & pakai viewModelScope agar bisa navigasi
+    fun updateKader(onSuccess: () -> Unit) {
+        if (validasiInput()) {
+            viewModelScope.launch {
+                try {
+                    val response = repositoriDataKader.editSatuKader(
+                        kaderId,
+                        kaderUiState.detailKader.toDataKader()
+                    )
 
-                if (response.isSuccessful) {
-                    println("Update Sukses: ${response.message()}")
-                } else {
-                    println("Update Gagal: ${response.errorBody()}")
+                    if (response.isSuccessful) {
+                        println("Update Sukses")
+                        onSuccess() // Menjalankan navigateBack dari View
+                    } else {
+                        println("Update Gagal: ${response.message()}")
+                    }
+                } catch (e: Exception) {
+                    println("Error: ${e.message}")
                 }
-            } catch (e: Exception) {
-                println("Error: ${e.message}")
             }
         }
     }
