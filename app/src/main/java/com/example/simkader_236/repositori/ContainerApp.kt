@@ -21,7 +21,7 @@ class DefaultAppContainer(private val context: Context) : AppContainer {
 
     // --- KONFIGURASI MYSQL (RETROFIT) ---
     // Sesuaikan baseUrl dengan folder htdocs Anda [cite: 743-746]
-    private val baseUrl = "http://10.0.2.2/simkader/"
+    private val baseUrl = "http://10.17.71.102/simkader/"
 
     private val logging = HttpLoggingInterceptor().apply {
         level = HttpLoggingInterceptor.Level.BODY
